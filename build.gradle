@@ -7,6 +7,8 @@ version '1.0'
 
 sourceCompatibility = 11
 targetCompatibility = 11
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
 
 repositories {
     mavenCentral()
@@ -17,6 +19,7 @@ ext {
 }
 
 dependencies {
+    implementation "org.slf4j:slf4j-api:1.7.25"
     testImplementation "org.junit.jupiter:junit-jupiter-api:${junit}"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junit}"
 }

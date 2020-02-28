@@ -8,7 +8,7 @@ import ru.avtomir.maps.calls.uploader.mapper.Tag;
 
 import java.util.*;
 
-public class YandexTableMapper implements TableMapper<CallStat> {
+public class GoogleTableMapper implements TableMapper<CallStat> {
     private static final Logger log = LoggerFactory.getLogger(YandexTableMapper.class);
     private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
     private List<Map<String, String>> asTable = new ArrayList<>();
@@ -24,10 +24,8 @@ public class YandexTableMapper implements TableMapper<CallStat> {
             map.put("id", String.join(";", stat.getProfileIds()));
             map.put("Марка", stat.getBrand());
             map.put("Город", stat.getRegion());
-            map.put("Только Яндекс?", stat.isCostSourceOnly() ? "Да" : "Нет");
-            map.put("Всего звонков", String.format("" +
-                    "=(%2$s%1$s + %3$s%1$s " +
-                    "+ %4$s%1$s + %5$s%1$s +%6$s%1$s)", i, "F", "G", "H", "I", "K"));
+            map.put("Только Google?", stat.isCostSourceOnly() ? "Да" : "Нет");
+            map.put("Всего звонков", String.format("=СУММ(%s%s:%s%s)", "F", i, "M", i));
             map.put("Продажа", stat.getCountAsString(Tag.SALE));
             map.put("Продажа Юр. Лицо", stat.getCountAsString(Tag.SALE_FLEET));
             map.put("Сервис", stat.getCountAsString(Tag.SERVICE));
@@ -40,11 +38,7 @@ public class YandexTableMapper implements TableMapper<CallStat> {
             map.put("Упущенный звонок", stat.getCountAsString(Tag.MISSED_CALLS));
             map.put("Не отвеченный 50+сек", stat.getCountAsString(Tag.NOT_ANSWERED50));
             map.put("Непереключенный звонок", stat.getCountAsString(Tag.NOT_SWITCHED_CALLS));
-            map.put("Затраты", stat.getCostAsString());
-            map.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", i, "R", "E"));
-            map.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", i, "R", "F", "G"));
-            map.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", i, "R", "H", "I", "K"));
-            asTable.add(Collections.unmodifiableMap(map));
+            asTable.add(map);
         }
         asTable.add(0, summary(startIdx, i));
     }
@@ -60,7 +54,7 @@ public class YandexTableMapper implements TableMapper<CallStat> {
                 "id",
                 "Марка",
                 "Город",
-                "Только Яндекс?",
+                "Только Google?",
                 "Всего звонков",
                 "Продажа",
                 "Продажа Юр. Лицо",
@@ -73,11 +67,7 @@ public class YandexTableMapper implements TableMapper<CallStat> {
                 "Нецелевой звонок",
                 "Упущенный звонок",
                 "Не отвеченный 50+сек",
-                "Непереключенный звонок",
-                "Затраты",
-                "CPA общий",
-                "CPA ОП",
-                "CPA сервис");
+                "Непереключенный звонок");
     }
 
     private Map<String, String> summary(Integer startIdx, Integer i) {
@@ -85,7 +75,7 @@ public class YandexTableMapper implements TableMapper<CallStat> {
         map.put("id", "-");
         map.put("Марка", "Все");
         map.put("Город", "Все");
-        map.put("Только Яндекс?", "-");
+        map.put("Только Google?", "-");
         int columnIdx = 4;
         map.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], startIdx + 1, i));
         map.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
@@ -100,10 +90,6 @@ public class YandexTableMapper implements TableMapper<CallStat> {
         map.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
         map.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
         map.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Затраты", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", startIdx, "R", "E"));
-        map.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", startIdx, "R", "F", "G"));
-        map.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", startIdx, "R", "H", "I", "K"));
         return map;
     }
 
