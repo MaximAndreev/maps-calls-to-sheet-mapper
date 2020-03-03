@@ -34,7 +34,7 @@ public class SummaryTableMapperTest {
         List<Map<String, String>> result = mapper.getTableBody();
 
         // then
-        Assertions.assertEquals(expected, result);
+        assertTableBodyEquals(expected, result);
     }
 
     private List<CallStatSummary> getTestData() {
@@ -130,6 +130,12 @@ public class SummaryTableMapperTest {
         row.put("sale_google", "4");
         row.put("service_google", "4");
         return row;
+    }
+
+    private void assertTableBodyEquals(List<Map<String, String>> expected, List<Map<String, String>> result) {
+        for (int i = 0; i < expected.size(); i++) {
+            Assertions.assertEquals(expected.get(i), result.get(i), "Expected=" + expected.get(i) + "; Actual=" + result.get(i));
+        }
     }
 
     @Test

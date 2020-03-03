@@ -1,7 +1,6 @@
 package ru.avtomir.maps.calls.uploader.mapper;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class CallStat {
@@ -38,7 +37,7 @@ public class CallStat {
     }
 
     public String getCostAsString() {
-        return String.format(Locale.forLanguageTag("ru-RU"), "%.2f", cost());
+        return String.format(TableMapper.LOCALE, "%.2f", cost());
     }
 
     public Double cost() {

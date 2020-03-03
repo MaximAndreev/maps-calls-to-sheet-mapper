@@ -27,15 +27,15 @@ public class SummaryTableMapper implements TableMapper<CallStatSummary> {
 
         row.put("sale_all", valueOf(summary.allSale()));
         row.put("service_all", valueOf(summary.allService()));
-        row.put("cpa_all", format("%.2f", summary.allCpa()));
+        row.put("cpa_all", format(LOCALE, "%.2f", summary.allCpa()));
 
         row.put("sale_2gis", valueOf(summary.twoGisSale()));
         row.put("service_2gis", valueOf(summary.twoGisService()));
-        row.put("cpa_2gis", format("%.2f", summary.twoGisCpa()));
+        row.put("cpa_2gis", format(LOCALE, "%.2f", summary.twoGisCpa()));
 
         row.put("sale_yandex", valueOf(summary.yandexSale()));
         row.put("service_yandex", valueOf(summary.yandexService()));
-        row.put("cpa_yandex", format("%.2f", summary.yandexCpa()));
+        row.put("cpa_yandex", format(LOCALE, "%.2f", summary.yandexCpa()));
 
         row.put("sale_google", valueOf(summary.googleSale()));
         row.put("service_google", valueOf(summary.googleService()));
