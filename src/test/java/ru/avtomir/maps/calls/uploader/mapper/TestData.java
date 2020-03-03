@@ -1,5 +1,6 @@
 package ru.avtomir.maps.calls.uploader.mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -97,6 +98,53 @@ public class TestData {
                         .setCostSourceOnly(false)
                         .build())
                 .build();
+    }
+
+    public static CallStatSummary summaryN3() {
+        return CallStatSummaryBuilder.aSummary()
+                .setBrand("Brand 2")
+                .setRegion("Region 2")
+                .setGoogle(CallCountBuilder.aCount()
+                        .setCost(13d)
+                        .setIds(List.of(21, 22, 23))
+                        .setTags(Map.of(Tag.SALE, 3, Tag.INSURANCE, 5, Tag.EQUIPMENT, 2))
+                        .setCostSourceOnly(true)
+                        .build())
+                .setYandex(
+                        CallCountBuilder.aCount()
+                                .setCost(20.1d)
+                                .setIds(List.of(24, 25, 26))
+                                .setTags(Map.of(Tag.MISSED_CALLS, 1, Tag.SALE_FLEET, 5))
+                                .setCostSourceOnly(true)
+                                .build())
+                .setTwogis(CallCountBuilder.aCount()
+                        .setCost(1d)
+                        .setIds(List.of(27, 28, 29))
+                        .setTags(Map.of(Tag.SALE, 4, Tag.UUU, 2))
+                        .setCostSourceOnly(false)
+                        .build())
+                .build();
+    }
+
+    public static MonthSummary monthSummaryN1() {
+        return new MonthSummary(
+                summaryN1(),
+                LocalDate.of(2019, 1, 1),
+                LocalDate.of(2019, 1, 31));
+    }
+
+    public static MonthSummary monthSummaryN2() {
+        return new MonthSummary(
+                summaryN2(),
+                LocalDate.of(2019, 1, 1),
+                LocalDate.of(2019, 1, 31));
+    }
+
+    public static MonthSummary monthSummaryN3() {
+        return new MonthSummary(
+                summaryN3(),
+                LocalDate.of(2019, 2, 1),
+                LocalDate.of(2019, 2, 14));
     }
 
 }

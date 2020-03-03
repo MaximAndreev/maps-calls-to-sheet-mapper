@@ -1,10 +1,14 @@
 package ru.avtomir.maps.calls.uploader.mapper.single;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.avtomir.maps.calls.uploader.mapper.CallStat;
+import ru.avtomir.maps.calls.uploader.mapper.TableMapper;
+import ru.avtomir.maps.calls.uploader.mapper.TableMapperFactory;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -12,11 +16,11 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TwoGisTableMapperTest extends AbstractTableMapper {
 
-    private TwoGisTableMapper mapper;
+    private TableMapper<CallStat> mapper;
 
     @BeforeEach
     void beforeEach() {
-        mapper = new TwoGisTableMapper();
+        mapper = TableMapperFactory.twoGisTableMapper();
     }
 
     @Test
@@ -106,5 +110,28 @@ public class TwoGisTableMapperTest extends AbstractTableMapper {
                 "CPA ОП",
                 "CPA сервис"),
                 mapper.getTableHeaders());
+    }
+
+    @Test
+    void tableBody_have_all_headers() {
+        // given
+        List<CallStat> stats = getTestStats();
+
+        // when
+        mapper.setSource(stats);
+        List<Map<String, String>> result = mapper.getTableBody();
+
+        // then
+        assertTableBodyContainsAllHeaders(result);
+    }
+
+    private void assertTableBodyContainsAllHeaders(List<Map<String, String>> result) {
+        result.forEach(this::assertHaveHeaders);
+
+    }
+
+    private void assertHaveHeaders(Map<String, String> row) {
+        HashSet<String> headers = new HashSet<>(mapper.getTableHeaders());
+        Assertions.assertEquals(headers, row.keySet());
     }
 }
