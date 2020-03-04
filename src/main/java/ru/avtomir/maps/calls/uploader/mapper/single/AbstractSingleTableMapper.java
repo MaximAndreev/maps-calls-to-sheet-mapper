@@ -21,7 +21,7 @@ public abstract class AbstractSingleTableMapper implements TableMapper<CallStat>
         firstNonHeadersRow = absoluteRowIndexOfFirstRowWithData;
     }
 
-    abstract Map<String, String> summaryRow(Integer firstNonHeadersRow, Integer countOfNonHeaderRows);
+    abstract Map<String, String> summaryRow(Integer countOfStatRows);
 
     abstract Map<String, String> statsRow(int currentRow, CallStat stat);
 
@@ -34,7 +34,7 @@ public abstract class AbstractSingleTableMapper implements TableMapper<CallStat>
     }
 
     private void addSummaryRow(int countOfStats) {
-        asTable.add(summaryRow(firstNonHeadersRow, countOfStats));
+        asTable.add(summaryRow(countOfStats));
     }
 
     private void addStatRows(List<CallStat> stats) {
@@ -50,7 +50,7 @@ public abstract class AbstractSingleTableMapper implements TableMapper<CallStat>
         return firstNonHeadersRow + countOfSummaryRows + i;
     }
 
-    protected String sumColumnFormula(char charLetter, Integer firstRow, Integer lastRow) {
+    public String sumColumnFormula(char charLetter, Integer firstRow, Integer lastRow) {
         String columnLetter = String.valueOf(charLetter);
         return String.format("=СУММ(%s%s:%s%s)", columnLetter, firstRow, columnLetter, lastRow);
     }

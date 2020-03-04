@@ -24,7 +24,7 @@ public class TableMapperFactory {
     }
 
     public static TableMapper<CallStatSummary> summaryTableMapper() {
-        return new SummaryTableMapper();
+        return new SummaryTableMapper(4);
     }
 
     public static TableMapper<MonthSummary> graphicTableMapperWithLinearPredict() {

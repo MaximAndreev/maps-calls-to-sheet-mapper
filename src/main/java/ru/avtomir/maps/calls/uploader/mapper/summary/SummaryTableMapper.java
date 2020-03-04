@@ -10,17 +10,59 @@ import static java.lang.String.valueOf;
 
 public class SummaryTableMapper implements TableMapper<CallStatSummary> {
 
-    private static final int FIRST_ROW = 3;
-
+    private final int firstNonHeadersRow;
     private List<Map<String, String>> asTable = new ArrayList<>();
+
+    public SummaryTableMapper(int absoluteRowIndexOfFirstRowWithData) {
+        this.firstNonHeadersRow = absoluteRowIndexOfFirstRowWithData;
+    }
 
     @Override
     public void setSource(List<CallStatSummary> stats) {
-        stats.forEach(this::createRow);
-        asTable.add(0, makeSummaryRow(stats));
+        addSummaryRow(stats);
+        addStatRows(stats);
     }
 
-    private void createRow(CallStatSummary summary) {
+    private void addSummaryRow(List<CallStatSummary> stats) {
+        asTable.add(summaryRow(stats));
+    }
+
+    private Map<String, String> summaryRow(List<CallStatSummary> stats) {
+        int countOfStatRows = stats.size();
+        Double allCostSum = stats.stream().mapToDouble(CallStatSummary::allCost).sum();
+        Double twoGisCostSum = stats.stream().mapToDouble(CallStatSummary::twoGisCost).sum();
+        Double yandexCostSum = stats.stream().mapToDouble(CallStatSummary::yandexCost).sum();
+        return summaryRow(countOfStatRows, allCostSum, twoGisCostSum, yandexCostSum);
+    }
+
+    private Map<String, String> summaryRow(int countOfStatRows,
+                                           Double allCostSum,
+                                           Double twoGisCostSum,
+                                           Double yandexCostSum) {
+        Map<String, String> map = new HashMap<>();
+        int firstStatRow = firstNonHeadersRow + 1;
+        int lastStatRow = firstNonHeadersRow + countOfStatRows;
+        map.put("марка", "Все");
+        map.put("город", "Все");
+        map.put("sale_all", sumColumnFormula('C', firstStatRow, lastStatRow));
+        map.put("service_all", sumColumnFormula('D', firstStatRow, lastStatRow));
+        map.put("cpa_all", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", allCostSum.intValue(), firstNonHeadersRow, "C", "D"));
+        map.put("sale_2gis", sumColumnFormula('F', firstStatRow, lastStatRow));
+        map.put("service_2gis", sumColumnFormula('G', firstStatRow, lastStatRow));
+        map.put("cpa_2gis", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", twoGisCostSum.intValue(), firstNonHeadersRow, "F", "G"));
+        map.put("sale_yandex", sumColumnFormula('I', firstStatRow, lastStatRow));
+        map.put("service_yandex", sumColumnFormula('J', firstStatRow, lastStatRow));
+        map.put("cpa_yandex", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", yandexCostSum.intValue(), firstNonHeadersRow, "I", "J"));
+        map.put("sale_google", sumColumnFormula('L', firstStatRow, lastStatRow));
+        map.put("service_google", sumColumnFormula('M', firstStatRow, lastStatRow));
+        return map;
+    }
+
+    private void addStatRows(List<CallStatSummary> stats) {
+        stats.forEach(this::statRow);
+    }
+
+    private void statRow(CallStatSummary summary) {
         Map<String, String> row = new HashMap<>();
         row.put("марка", summary.getBrand());
         row.put("город", summary.getRegion());
@@ -41,37 +83,6 @@ public class SummaryTableMapper implements TableMapper<CallStatSummary> {
         row.put("service_google", valueOf(summary.googleService()));
 
         asTable.add(row);
-    }
-
-    private Map<String, String> makeSummaryRow(List<CallStatSummary> stats) {
-        int rows = stats.size();
-        Double allCostSum = stats.stream().mapToDouble(CallStatSummary::allCost).sum();
-        Double twoGisCostSum = stats.stream().mapToDouble(CallStatSummary::twoGisCost).sum();
-        Double yandexCostSum = stats.stream().mapToDouble(CallStatSummary::yandexCost).sum();
-        return makeSummaryRow(rows, allCostSum, twoGisCostSum, yandexCostSum);
-    }
-
-    private Map<String, String> makeSummaryRow(int rows,
-                                               Double allCostSum,
-                                               Double twoGisCostSum,
-                                               Double yandexCostSum) {
-        Map<String, String> map = new HashMap<>();
-        int step = 2;
-        int rowsLast = rows + FIRST_ROW + 1;
-        map.put("марка", "Все");
-        map.put("город", "Все");
-        map.put("sale_all", sumColumnFormula('C', FIRST_ROW + step, rowsLast));
-        map.put("service_all", sumColumnFormula('D', FIRST_ROW + step, rowsLast));
-        map.put("cpa_all", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", allCostSum.intValue(), FIRST_ROW + 1, "C", "D"));
-        map.put("sale_2gis", sumColumnFormula('F', FIRST_ROW + step, rowsLast));
-        map.put("service_2gis", sumColumnFormula('G', FIRST_ROW + step, rowsLast));
-        map.put("cpa_2gis", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", twoGisCostSum.intValue(), FIRST_ROW + 1, "F", "G"));
-        map.put("sale_yandex", sumColumnFormula('I', FIRST_ROW + step, rowsLast));
-        map.put("service_yandex", sumColumnFormula('J', FIRST_ROW + step, rowsLast));
-        map.put("cpa_yandex", String.format("=%1$s/(%3$s%2$s + %4$s%2$s)", yandexCostSum.intValue(), FIRST_ROW + 1, "I", "J"));
-        map.put("sale_google", sumColumnFormula('L', FIRST_ROW + step, rowsLast));
-        map.put("service_google", sumColumnFormula('M', FIRST_ROW + step, rowsLast));
-        return map;
     }
 
     private String sumColumnFormula(char charLetter, Integer firstRow, Integer lastRow) {

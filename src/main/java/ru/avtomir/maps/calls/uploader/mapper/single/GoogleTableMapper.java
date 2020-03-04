@@ -15,27 +15,28 @@ public class GoogleTableMapper extends AbstractSingleTableMapper implements Tabl
         super(absoluteRowIndexOfFirstRowWithData);
     }
 
-    protected Map<String, String> summaryRow(Integer firstNonHeadersRow, Integer countOfNonHeaderRows) {
-        int lastNonHeaderRow = firstNonHeadersRow + countOfNonHeaderRows;
+    protected Map<String, String> summaryRow(Integer countOfStatRows) {
+        int firstStatRow = firstNonHeadersRow + 1;
+        int lastStatRow = firstNonHeadersRow + countOfStatRows;
         Map<String, String> map = new HashMap<>();
         map.put("id", "-");
         map.put("Марка", "Все");
         map.put("Город", "Все");
         map.put("Только Google?", "-");
         int columnIdx = 4;
-        map.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        map.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        map.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], firstStatRow, lastStatRow));
+        map.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        map.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
         return map;
     }
 

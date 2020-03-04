@@ -16,28 +16,29 @@ public class YandexTableMapper extends AbstractSingleTableMapper implements Tabl
     }
 
     @Override
-    protected Map<String, String> summaryRow(Integer firstNonHeadersRow, Integer countOfNonHeaderRows) {
-        int lastNonHeaderRow = firstNonHeadersRow + countOfNonHeaderRows;
+    protected Map<String, String> summaryRow(Integer countOfStatRows) {
+        int firstStatRow = firstNonHeadersRow + 1;
+        int lastStatRow = firstNonHeadersRow + countOfStatRows;
         Map<String, String> summaryRow = new HashMap<>();
         summaryRow.put("id", "-");
         summaryRow.put("Марка", "Все");
         summaryRow.put("Город", "Все");
         summaryRow.put("Только Яндекс?", "-");
         int columnIdx = 4;
-        summaryRow.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
-        summaryRow.put("Затраты", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
+        summaryRow.put("Затраты", sumColumnFormula(ALPHABET[++columnIdx], firstStatRow, lastStatRow));
         summaryRow.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", firstNonHeadersRow, "R", "E"));
         summaryRow.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", firstNonHeadersRow, "R", "F", "G"));
         summaryRow.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", firstNonHeadersRow, "R", "H", "I", "K"));
