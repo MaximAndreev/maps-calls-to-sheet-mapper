@@ -103,4 +103,14 @@ public class SummaryTableMapper implements TableMapper<CallStatSummary> {
                 "sale_yandex", "service_yandex", "cpa_yandex",
                 "sale_google", "service_google");
     }
+
+    @Override
+    public boolean dependsOnIndexOfFirstNonHeadersRow() {
+        return true;
+    }
+
+    @Override
+    public int getIndexOfFirstNonHeadersRow() {
+        return firstNonHeadersRow;
+    }
 }

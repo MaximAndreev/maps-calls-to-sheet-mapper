@@ -26,6 +26,11 @@ public abstract class AbstractSingleTableMapper implements TableMapper<CallStat>
     abstract Map<String, String> statsRow(int currentRow, CallStat stat);
 
     @Override
+    public int getIndexOfFirstNonHeadersRow() {
+        return firstNonHeadersRow;
+    }
+
+    @Override
     public void setSource(List<CallStat> stats) {
         log.trace("convert to Google Sheets table");
         int countOfStats = stats.size();
@@ -53,6 +58,11 @@ public abstract class AbstractSingleTableMapper implements TableMapper<CallStat>
     public String sumColumnFormula(char charLetter, Integer firstRow, Integer lastRow) {
         String columnLetter = String.valueOf(charLetter);
         return String.format("=СУММ(%s%s:%s%s)", columnLetter, firstRow, columnLetter, lastRow);
+    }
+
+    @Override
+    public boolean dependsOnIndexOfFirstNonHeadersRow() {
+        return true;
     }
 
     @Override

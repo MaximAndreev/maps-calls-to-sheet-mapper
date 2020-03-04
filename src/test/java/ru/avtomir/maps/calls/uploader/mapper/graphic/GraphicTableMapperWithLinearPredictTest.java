@@ -10,6 +10,7 @@ import ru.avtomir.maps.calls.uploader.mapper.TableMapperFactory;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static ru.avtomir.maps.calls.uploader.mapper.TestData.*;
 
 public class GraphicTableMapperWithLinearPredictTest {
@@ -111,5 +112,11 @@ public class GraphicTableMapperWithLinearPredictTest {
     private void assertHaveHeaders(Map<String, String> row) {
         HashSet<String> headers = new HashSet<>(mapper.getTableHeaders());
         Assertions.assertEquals(headers, row.keySet());
+    }
+
+    @Test
+    void correctIndexOfFirstRow() {
+        assertFalse(mapper.dependsOnIndexOfFirstNonHeadersRow());
+        assertEquals(-1, mapper.getIndexOfFirstNonHeadersRow());
     }
 }

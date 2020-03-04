@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TwoGisTableMapperTest extends AbstractTableMapper {
 
@@ -133,5 +134,11 @@ public class TwoGisTableMapperTest extends AbstractTableMapper {
     private void assertHaveHeaders(Map<String, String> row) {
         HashSet<String> headers = new HashSet<>(mapper.getTableHeaders());
         Assertions.assertEquals(headers, row.keySet());
+    }
+
+    @Test
+    void correctIndexOfFirstRow() {
+        assertTrue(mapper.dependsOnIndexOfFirstNonHeadersRow());
+        assertEquals(3, mapper.getIndexOfFirstNonHeadersRow());
     }
 }

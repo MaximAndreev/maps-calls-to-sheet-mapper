@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static java.lang.String.format;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class YandexTableMapperTest extends AbstractTableMapper {
 
@@ -137,5 +138,11 @@ public class YandexTableMapperTest extends AbstractTableMapper {
     private void assertHaveHeaders(Map<String, String> row) {
         HashSet<String> headers = new HashSet<>(mapper.getTableHeaders());
         Assertions.assertEquals(headers, row.keySet());
+    }
+
+    @Test
+    void correctIndexOfFirstRow() {
+        assertTrue(mapper.dependsOnIndexOfFirstNonHeadersRow());
+        assertEquals(3, mapper.getIndexOfFirstNonHeadersRow());
     }
 }

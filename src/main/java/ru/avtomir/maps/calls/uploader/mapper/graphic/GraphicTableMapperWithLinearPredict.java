@@ -79,6 +79,16 @@ public class GraphicTableMapperWithLinearPredict implements TableMapper<MonthSum
                 "Продажи и Сервис Все", "Продажи Все", "Сервис Все", "CPA", "Затраты");
     }
 
+    @Override
+    public boolean dependsOnIndexOfFirstNonHeadersRow() {
+        return false;
+    }
+
+    @Override
+    public int getIndexOfFirstNonHeadersRow() {
+        return -1;
+    }
+
     private static class Row {
         public LocalDate month;
         public LocalDate date;
@@ -97,7 +107,7 @@ public class GraphicTableMapperWithLinearPredict implements TableMapper<MonthSum
         }
 
         public boolean predictable() {
-            return month.getDayOfMonth() != date.getDayOfMonth();
+            return month.lengthOfMonth() != date.getDayOfMonth();
         }
 
         public Integer daysInMonth() {

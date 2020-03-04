@@ -13,4 +13,8 @@ public interface TableMapper<T> {
     List<Map<String, String>> getTableBody();
 
     List<String> getTableHeaders();
+
+    boolean dependsOnIndexOfFirstNonHeadersRow();
+
+    int getIndexOfFirstNonHeadersRow();
 }
