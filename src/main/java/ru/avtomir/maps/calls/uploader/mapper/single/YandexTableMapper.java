@@ -1,57 +1,76 @@
 package ru.avtomir.maps.calls.uploader.mapper.single;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.avtomir.maps.calls.uploader.mapper.CallStat;
 import ru.avtomir.maps.calls.uploader.mapper.TableMapper;
 import ru.avtomir.maps.calls.uploader.mapper.Tag;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class YandexTableMapper implements TableMapper<CallStat> {
-    private static final Logger log = LoggerFactory.getLogger(YandexTableMapper.class);
-    private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
-    private List<Map<String, String>> asTable = new ArrayList<>();
+public class YandexTableMapper extends AbstractSingleTableMapper implements TableMapper<CallStat> {
 
-    @Override
-    public void setSource(List<CallStat> stats) {
-        log.trace("convert to Google Sheets table");
-        int startIdx = 3;
-        int i = startIdx;
-        for (CallStat stat : stats) {
-            i++;
-            Map<String, String> map = new HashMap<>();
-            map.put("id", String.join(";", stat.getProfileIds()));
-            map.put("Марка", stat.getBrand());
-            map.put("Город", stat.getRegion());
-            map.put("Только Яндекс?", stat.isCostSourceOnly() ? "Да" : "Нет");
-            map.put("Всего звонков", String.format("" +
-                    "=(%2$s%1$s + %3$s%1$s " +
-                    "+ %4$s%1$s + %5$s%1$s +%6$s%1$s)", i, "F", "G", "H", "I", "K"));
-            map.put("Продажа", stat.getCountAsString(Tag.SALE));
-            map.put("Продажа Юр. Лицо", stat.getCountAsString(Tag.SALE_FLEET));
-            map.put("Сервис", stat.getCountAsString(Tag.SERVICE));
-            map.put("Доп. оборудование", stat.getCountAsString(Tag.EQUIPMENT));
-            map.put("БУ", stat.getCountAsString(Tag.USED));
-            map.put("Запчасти", stat.getCountAsString(Tag.PARTS));
-            map.put("Страхование", stat.getCountAsString(Tag.INSURANCE));
-            map.put("Прочее", stat.getCountAsString(Tag.OTHERS));
-            map.put("Нецелевой звонок", stat.getCountAsString(Tag.NON_TARGET));
-            map.put("Упущенный звонок", stat.getCountAsString(Tag.MISSED_CALLS));
-            map.put("Не отвеченный 50+сек", stat.getCountAsString(Tag.NOT_ANSWERED50));
-            map.put("Непереключенный звонок", stat.getCountAsString(Tag.NOT_SWITCHED_CALLS));
-            map.put("Затраты", stat.getCostAsString());
-            map.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", i, "R", "E"));
-            map.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", i, "R", "F", "G"));
-            map.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", i, "R", "H", "I", "K"));
-            asTable.add(Collections.unmodifiableMap(map));
-        }
-        asTable.add(0, summary(startIdx, i));
+    public YandexTableMapper(int absoluteRowIndexOfFirstRowWithData) {
+        super(absoluteRowIndexOfFirstRowWithData);
     }
 
     @Override
-    public List<Map<String, String>> getTableBody() {
-        return Collections.unmodifiableList(asTable);
+    protected Map<String, String> summaryRow(Integer firstNonHeadersRow, Integer countOfNonHeaderRows) {
+        int lastNonHeaderRow = firstNonHeadersRow + countOfNonHeaderRows;
+        Map<String, String> summaryRow = new HashMap<>();
+        summaryRow.put("id", "-");
+        summaryRow.put("Марка", "Все");
+        summaryRow.put("Город", "Все");
+        summaryRow.put("Только Яндекс?", "-");
+        int columnIdx = 4;
+        summaryRow.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("Затраты", sumColumnFormula(ALPHABET[++columnIdx], firstNonHeadersRow + 1, lastNonHeaderRow));
+        summaryRow.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", firstNonHeadersRow, "R", "E"));
+        summaryRow.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", firstNonHeadersRow, "R", "F", "G"));
+        summaryRow.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", firstNonHeadersRow, "R", "H", "I", "K"));
+        return summaryRow;
+    }
+
+    @Override
+    protected Map<String, String> statsRow(int currentRow, CallStat stat) {
+        Map<String, String> row = new HashMap<>();
+        row.put("id", String.join(";", stat.getProfileIds()));
+        row.put("Марка", stat.getBrand());
+        row.put("Город", stat.getRegion());
+        row.put("Только Яндекс?", stat.isCostSourceOnly() ? "Да" : "Нет");
+        row.put("Всего звонков", String.format("" +
+                "=(%2$s%1$s + %3$s%1$s " +
+                "+ %4$s%1$s + %5$s%1$s +%6$s%1$s)", currentRow, "F", "G", "H", "I", "K"));
+        row.put("Продажа", stat.getCountAsString(Tag.SALE));
+        row.put("Продажа Юр. Лицо", stat.getCountAsString(Tag.SALE_FLEET));
+        row.put("Сервис", stat.getCountAsString(Tag.SERVICE));
+        row.put("Доп. оборудование", stat.getCountAsString(Tag.EQUIPMENT));
+        row.put("БУ", stat.getCountAsString(Tag.USED));
+        row.put("Запчасти", stat.getCountAsString(Tag.PARTS));
+        row.put("Страхование", stat.getCountAsString(Tag.INSURANCE));
+        row.put("Прочее", stat.getCountAsString(Tag.OTHERS));
+        row.put("Нецелевой звонок", stat.getCountAsString(Tag.NON_TARGET));
+        row.put("Упущенный звонок", stat.getCountAsString(Tag.MISSED_CALLS));
+        row.put("Не отвеченный 50+сек", stat.getCountAsString(Tag.NOT_ANSWERED50));
+        row.put("Непереключенный звонок", stat.getCountAsString(Tag.NOT_SWITCHED_CALLS));
+        row.put("Затраты", stat.getCostAsString());
+        row.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", currentRow, "R", "E"));
+        row.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", currentRow, "R", "F", "G"));
+        row.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", currentRow, "R", "H", "I", "K"));
+        return row;
     }
 
     @Override
@@ -78,37 +97,5 @@ public class YandexTableMapper implements TableMapper<CallStat> {
                 "CPA общий",
                 "CPA ОП",
                 "CPA сервис");
-    }
-
-    private Map<String, String> summary(Integer startIdx, Integer i) {
-        Map<String, String> map = new HashMap<>();
-        map.put("id", "-");
-        map.put("Марка", "Все");
-        map.put("Город", "Все");
-        map.put("Только Яндекс?", "-");
-        int columnIdx = 4;
-        map.put("Всего звонков", sumColumnFormula(ALPHABET[columnIdx], startIdx + 1, i));
-        map.put("Продажа", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Продажа Юр. Лицо", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Сервис", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Доп. оборудование", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("БУ", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Запчасти", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Страхование", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Прочее", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Нецелевой звонок", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Упущенный звонок", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Не отвеченный 50+сек", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Непереключенный звонок", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("Затраты", sumColumnFormula(ALPHABET[++columnIdx], startIdx + 1, i));
-        map.put("CPA общий", String.format("=%2$s%1$s/%3$s%1$s", startIdx, "R", "E"));
-        map.put("CPA ОП", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s)", startIdx, "R", "F", "G"));
-        map.put("CPA сервис", String.format("=%2$s%1$s/(%3$s%1$s + %4$s%1$s + %5$s%1$s)", startIdx, "R", "H", "I", "K"));
-        return map;
-    }
-
-    private String sumColumnFormula(char charLetter, Integer firstRow, Integer lastRow) {
-        String columnLetter = String.valueOf(charLetter);
-        return String.format("=СУММ(%s%s:%s%s)", columnLetter, firstRow, columnLetter, lastRow);
     }
 }

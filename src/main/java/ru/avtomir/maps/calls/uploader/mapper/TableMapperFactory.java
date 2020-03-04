@@ -12,15 +12,15 @@ public class TableMapperFactory {
     }
 
     public static TableMapper<CallStat> yandexTableMapper() {
-        return new YandexTableMapper();
+        return new YandexTableMapper(3);
     }
 
     public static TableMapper<CallStat> googleTableMapper() {
-        return new GoogleTableMapper();
+        return new GoogleTableMapper(3);
     }
 
     public static TableMapper<CallStat> twoGisTableMapper() {
-        return new TwoGisTableMapper();
+        return new TwoGisTableMapper(3);
     }
 
     public static TableMapper<CallStatSummary> summaryTableMapper() {
