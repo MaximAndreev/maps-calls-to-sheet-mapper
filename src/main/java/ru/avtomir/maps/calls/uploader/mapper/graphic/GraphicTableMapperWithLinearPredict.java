@@ -50,7 +50,7 @@ public class GraphicTableMapperWithLinearPredict implements TableMapper<MonthSum
         target.city = source.city;
         target.leadsSale = Double.valueOf(source.leadsSale * linearCoefficient).intValue();
         target.leadsService = Double.valueOf(source.leadsService * linearCoefficient).intValue();
-        target.cost = source.cost * linearCoefficient;
+        target.cost = source.cost;
         return target;
     }
 

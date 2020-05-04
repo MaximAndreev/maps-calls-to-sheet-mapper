@@ -78,8 +78,8 @@ public class GraphicTableMapperWithLinearPredictTest {
         row.put("Продажи и Сервис Все", "28");  // before prediction: 14
         row.put("Продажи Все", "24");  // before prediction: 12
         row.put("Сервис Все", "4");  // before prediction: 2
-        row.put("CPA", "2,44");
-        row.put("Затраты", "68");  // before prediction: 34.1
+        row.put("CPA", "1,22");
+        row.put("Затраты", "34");
         return row;
     }
 
